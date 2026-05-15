@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import { useState, useEffect } from 'react';
+import { CATEGORIES as DEFAULT_CATEGORIES } from './Data/SampleData';
 import { startSignalRConnection, subscribeNewOrder, subscribeOrderUpdated, unsubscribeNewOrder, unsubscribeOrderUpdated, stopSignalRConnection } from './utils/signalr';
 import { MenuBrowser } from './components/MenuBrowser';
 import { Cart } from './components/Cart';
@@ -103,11 +104,12 @@ export default function App() {
         setMenuItems(data);
   
         // Build categories dynamically
-        const uniqueCategories = Array.from(
-          new Set(data.map(item => item.category))
-        );
-  
-        setCategories(['All', ...uniqueCategories]);
+        const uniqueCategories = Array.from(new Set(data.map(item => item.category)));
+        // Preserve preferred order from SampleData when possible
+        const ordered = DEFAULT_CATEGORIES.filter((c) => uniqueCategories.includes(c));
+        // Append any categories from data that aren't in DEFAULT_CATEGORIES
+        const extras = uniqueCategories.filter((c) => !ordered.includes(c));
+        setCategories(['All', ...ordered.filter((c) => c !== 'All'), ...extras]);
       } catch (err) {
         console.error('Failed to fetch menu', err);
       } finally {
@@ -252,12 +254,14 @@ const placeOrder = async () => {
     return;
   }
 
-  // Map cart items to backend DTO
+  // Map cart items to backend DTO (convert add-ons to id + quantity)
   const itemsDTO = cart.map(item => ({
-    menuItemId: Number(item.menuItem.id),       // convert string ID to number
+    menuItemId: Number(item.menuItem.id),
     quantity: item.quantity,
     size: item.size || '',
-    AddOns: item.addOns // convert add-on IDs to numbers
+    // include both shapes to be compatible with different backend expectations
+    addOns: (item.addOns || []).map(a => ({ id: Number((a as any).id), quantity: Number((a as any).quantity || 1) })),
+    AddOns: (item.addOns || []).map(a => ({ id: Number((a as any).id), quantity: Number((a as any).quantity || 1) })),
   }));
 
   const newOrderDTO = {

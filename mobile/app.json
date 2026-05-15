@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "ChickoChicken Mobile",
+    "slug": "chickochicken-mobile",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "extra": {
+      "API_BASE_URL": "http://localhost:5233",
+      "SIGNALR_URL": "http://localhost:5233/order",
+      "eas": {
+        "projectId": "56230abf-c0fe-4a13-8c98-ac426a2b5b10"
+      }
+    },
+    "android": {
+      "package": "com.imama.chickochickenmobile"
+    },
+    "ios": {
+      "bundleIdentifier": "com.imama.chickochickenmobile"
+    }
+  }
+}

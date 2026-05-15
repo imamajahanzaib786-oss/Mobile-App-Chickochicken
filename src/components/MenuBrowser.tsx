@@ -51,7 +51,7 @@ const [loading, setLoading] = useState(true);
  return (
     <div>
       {/* Category Filter */}
-      <div className="mb-8">
+      <div className="mb-5 mt-4">
         <div className="flex gap-2 overflow-x-auto pb-2">
           {CATEGORIES.map(category => (
             <button
